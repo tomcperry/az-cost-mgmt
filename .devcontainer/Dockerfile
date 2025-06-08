@@ -37,3 +37,5 @@ RUN mkdir -p /etc/apt/keyrings \
 USER $USERNAME
 
 RUN az bicep install
+
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
