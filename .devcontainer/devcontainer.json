@@ -9,6 +9,7 @@
                 "terminal.integrated.defaultProfile.linux": "bash"
             },
             "extensions": [
+                "nefrob.vscode-just-syntax",
                 "ms-azuretools.vscode-bicep",
                 "ms-azuretools.vscode-docker",
                 "ms-vscode.vscode-node-azure-pack",
