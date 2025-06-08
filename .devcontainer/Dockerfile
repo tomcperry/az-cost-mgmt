@@ -11,6 +11,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
         apt-transport-https \
         ca-certificates \
         lsb-release \
+        openssh-client \
         gnupg \
         git \
         curl \
