@@ -1,8 +1,7 @@
 targetScope = 'subscription'
 
 // Types
-type storageAccountSkuType =  'Standard_GRS' | 'Standard_GZRS' | 'Standard_LRS' | 'Standard_ZRS'
-
+type storageAccountSkuType = 'Standard_GRS' | 'Standard_GZRS' | 'Standard_LRS' | 'Standard_ZRS'
 
 // Parameters
 param location string

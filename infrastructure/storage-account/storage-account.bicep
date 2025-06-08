@@ -34,8 +34,8 @@ resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2024-01-01'
   name: 'default'
   parent: storageAccount
   properties: {
-    changeFeed: { 
-      enabled: false 
+    changeFeed: {
+      enabled: false
     }
     containerDeleteRetentionPolicy: {
       enabled: false
@@ -46,8 +46,8 @@ resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2024-01-01'
     }
     isVersioningEnabled: false
     restorePolicy: {
-      enabled: false    }
-
+      enabled: false
+    }
   }
 }
 
