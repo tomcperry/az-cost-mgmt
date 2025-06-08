@@ -1,0 +1,14 @@
+{
+    "name": "Ubuntu dev container with Azure Cost Management tools",
+    "build": {
+        "dockerfile": "./Dockerfile"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.vscode-node-azure-pack",
+                "ms-vscode.azurecli"
+            ]
+        }
+    }
+}
