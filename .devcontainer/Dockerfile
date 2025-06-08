@@ -34,3 +34,5 @@ RUN mkdir -p /etc/apt/keyrings \
     && apt-get -y install --no-install-recommends azure-cli
 
 USER $USERNAME
+
+RUN az bicep install
