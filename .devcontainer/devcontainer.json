@@ -9,6 +9,7 @@
                 "terminal.integrated.defaultProfile.linux": "bash"
             },
             "extensions": [
+                "github.vscode-github-actions",
                 "nefrob.vscode-just-syntax",
                 "ms-azuretools.vscode-bicep",
                 "ms-azuretools.vscode-docker",
