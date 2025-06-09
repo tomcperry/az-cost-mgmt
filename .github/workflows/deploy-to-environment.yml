@@ -1,5 +1,5 @@
 name: Deploy to Environment
-run-name: Deploy to ${{ github.ref_name == 'main' && 'production' || 'staging' }} environment, run by ${{ github.actor }}
+run-name: Deploy to ${{ github.ref_name == 'main' && 'production' || 'staging' }}
 on:
     push:
         branches:
@@ -15,6 +15,7 @@ env:
     AZ_LOCATION: ${{ vars.AZ_LOCATION || 'westeurope' }}
 jobs:
     deploy:
+        name: Deployment - ${{ github.ref_name == 'main' && 'Production' || 'Staging' }}
         runs-on: ubuntu-24.04
         environment: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
         permissions:
