@@ -19,6 +19,6 @@ module storageAccount 'storage-account/storage-account.bicep' = {
   scope: rg
   params: {
     location: location
-    storageAccountSku: storageAccountSku
+    storageAccountSku: storageAccountSkud
   }
 }
