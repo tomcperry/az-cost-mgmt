@@ -1,5 +1,5 @@
-name: Deploy to Environment
-run-name: CI/CD - ${{ github.ref_name == 'main' && 'Production' || 'PR' }}
+name: CI/CD Workflow
+run-name: CI/CD for ${{ github.ref_name == 'main' && 'Production' || 'PR' }}
 on:
     push:
         branches:
