@@ -36,6 +36,9 @@ jobs:
             contents: read
             pull-requests: write
         steps:
+            - name: Capture timestamp
+              run: echo "WORKFLOW_TS=$(TZ='Europe/Copenhagen' date)" >> $GITHUB_ENV
+
             - name: Checkout
               uses: actions/checkout@v4
 
@@ -64,6 +67,7 @@ jobs:
                 gh pr comment ${{ github.event.pull_request.number }} --body "$(cat <<EOF
                 ### What-if analysis result
                 From commit ${{ github.event.pull_request.head.sha }}
+                Started at ${WORKFLOW_TS}
                 \`\`\`text
                 ${WHAT_IF_RESULT}
                 \`\`\`
