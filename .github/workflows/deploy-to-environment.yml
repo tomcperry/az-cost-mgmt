@@ -67,7 +67,15 @@ jobs:
             
             - name: Update PR
               run: |
-                gh pr comment ${{ github.event.pull_request.number }} --body "What-if analysis result:\n\From commit ${{ github.sha }}\nn\`\`\`text\n${WHAT_IF_RESULT}\n\`\`\`"
+                gh pr comment ${{ github.event.pull_request.number }} --body "$(cat <<EOF
+                **What-if analysis result**
+                From commit ${{ github.sha }}
+                
+                ```text
+                ${WHAT_IF_RESULT}
+                ```
+                EOF
+                )"
 
     deploy:
         name: Deployment - ${{ github.ref_name == 'main' && 'Production' || 'Staging' }}
