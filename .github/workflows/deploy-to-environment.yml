@@ -56,7 +56,11 @@ jobs:
                 inlineScript: |
                     whatif=$(az deployment sub create --what-if --location ${{ env.AZ_LOCATION }} --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} --template-file ./infrastructure/main.bicep --parameters ./infrastructure/parameters.bicepparam --what-if-result-format FullResourcePayloads)
                     echo "${whatif}"
-                    echo "WHAT_IF_RESULT=${whatif}" >> $GITHUB_ENV
+                    {
+                        echo "WHAT_IF_RESULT<<EOF"
+                        echo "${whatif}"
+                        echo "EOF"
+                    } >> $GITHUB_ENV
             
             - name: Update PR
               run: |
