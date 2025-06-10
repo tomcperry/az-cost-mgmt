@@ -68,7 +68,7 @@ jobs:
                 ### What-if analysis result
                 \`\`\`text
                 ${WHAT_IF_RESULT}
-                \`\`\`#
+                \`\`\`
                 From commit: ${{ github.event.pull_request.head.sha }}
                 Started at: \`${WORKFLOW_TS}\`
                 EOF
