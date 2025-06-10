@@ -81,10 +81,3 @@ jobs:
                 inlineScript: |
                     az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
                     az stack sub create --location ${{ env.AZ_LOCATION }} --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} --template-file ./infrastructure/main.bicep --parameters ./infrastructure/parameters.bicepparam --name "cost-mgmt" --action-on-unmanage deleteAll --deny-settings-mode none --yes
-
-            - name: What-if
-              uses: azure/cli@v2
-              with:
-                azcliversion: latest
-                inlineScript: |
-                    az deployment sub create --what-if --location ${{ env.AZ_LOCATION }} --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} --template-file ./infrastructure/main.bicep --parameters ./infrastructure/parameters.bicepparam
