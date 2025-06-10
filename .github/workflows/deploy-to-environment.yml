@@ -6,7 +6,10 @@ on:
           - main
           - feature/**
           - fix/**
-
+        paths: 
+          - 'infrastructure/**'
+          - '.github/workflows/deploy-to-environment.yml'
+          
 concurrency: 
     group: deploy-${{ github.ref_name == 'main' && 'production' || 'staging' }}
     cancel-in-progress: true
