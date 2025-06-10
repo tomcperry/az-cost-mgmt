@@ -43,7 +43,7 @@ jobs:
                 fi
 
     what-if:
-        name: What-If Analysis (Compare to production)
+        name: What-If (vs production)
         runs-on: ubuntu-24.04
         if: github.event_name == 'pull_request' 
         needs: lint
