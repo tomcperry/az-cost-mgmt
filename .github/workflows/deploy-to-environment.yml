@@ -36,7 +36,7 @@ jobs:
               run: |
                 az bicep install
                 az bicep build --file ./infrastructure/main.bicep 2>&1 | tee bicep_build.log
-                if grep -q "warning" bicep_build.log; then
+                if grep -q -i -E "warning|error" bicep_build.log; then
                     echo "Bicep linting found warnings."
                     exit 1
                 else
