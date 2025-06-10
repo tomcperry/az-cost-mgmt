@@ -24,10 +24,29 @@ env:
     AZ_LOCATION: ${{ vars.AZ_LOCATION || 'westeurope' }}
 
 jobs:
+    lint:
+        name: Lint Bicep
+        runs-on: ubuntu-24.04
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Lint Bicep
+              run: |
+                az bicep install
+                az bicep build --file ./infrastructure/main.bicep 2>&1 | tee bicep_build.log
+                if grep -q -i -E "warning|error" bicep_build.log; then
+                    echo "Bicep linting found warnings."
+                    exit 1
+                else
+                    echo "Bicep linting passed without warnings."
+                fi
+
     what-if:
         name: What-If Analysis
         runs-on: ubuntu-24.04
         if: github.event_name == 'pull_request' 
+        needs: lint
         environment: production
         env:
             GH_TOKEN: ${{ github.token }}
@@ -73,25 +92,6 @@ jobs:
                 Started at: \`${WORKFLOW_TS}\`
                 EOF
                 )"
-
-    lint:
-        name: Lint Bicep
-        runs-on: ubuntu-24.04
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
-
-            - name: Lint Bicep
-              run: |
-                az bicep install
-                az bicep build --file ./infrastructure/main.bicep 2>&1 | tee bicep_build.log
-                if grep -q -i -E "warning|error" bicep_build.log; then
-                    echo "Bicep linting found warnings."
-                    exit 1
-                else
-                    echo "Bicep linting passed without warnings."
-                fi
-
     deploy:
         name: Deployment - ${{ github.ref_name == 'main' && 'Production' || 'Staging' }}
         runs-on: ubuntu-24.04
