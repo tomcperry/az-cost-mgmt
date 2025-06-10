@@ -54,7 +54,13 @@ jobs:
               with:
                 azcliversion: latest
                 inlineScript: |
-                    az deployment sub create --what-if --location ${{ env.AZ_LOCATION }} --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} --template-file ./infrastructure/main.bicep --parameters ./infrastructure/parameters.bicepparam --what-if-result-format FullResourcePayloads 
+                    whatif=$(az deployment sub create --what-if --location ${{ env.AZ_LOCATION }} --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} --template-file ./infrastructure/main.bicep --parameters ./infrastructure/parameters.bicepparam --what-if-result-format FullResourcePayloads)
+                    echo "${whatif}"
+                    echo "WHAT_IF_RESULT=${whatif}" >> $GITHUB_ENV
+            
+            - name: Update PR
+              run: |
+                gh pr comment ${{ github.event.pull_request.number }} --body "What-if analysis result:\n\From commit ${{ github.sha }}\nn\`\`\`text\n${WHAT_IF_RESULT}\n\`\`\`"
 
     deploy:
         name: Deployment - ${{ github.ref_name == 'main' && 'Production' || 'Staging' }}
