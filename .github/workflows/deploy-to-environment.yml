@@ -4,8 +4,6 @@ on:
     push:
         branches:
           - main
-          - feature/**
-          - fix/**
         paths: 
           - 'infrastructure/**'
           - '.github/workflows/deploy-to-environment.yml'
@@ -14,10 +12,6 @@ on:
           - opened
           - synchronize
           - reopened
-        branches:
-          - main
-          - feature/**
-          - fix/**
         paths:
           - 'infrastructure/**'
           - '.github/workflows/deploy-to-environment.yml'
