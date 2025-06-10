@@ -6,7 +6,7 @@ on:
           - main
         paths: 
           - 'infrastructure/**'
-          - '.github/workflows/deploy-to-environment.yml'
+          - '.github/workflows/**'
     pull_request: 
         types: 
           - opened
@@ -14,7 +14,7 @@ on:
           - reopened
         paths:
           - 'infrastructure/**'
-          - '.github/workflows/deploy-to-environment.yml'
+          - '.github/workflows/**'
           
 concurrency: 
     group: deploy-${{ github.ref_name == 'main' && 'production' || 'staging' }}
