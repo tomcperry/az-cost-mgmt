@@ -31,7 +31,7 @@ env:
 
 jobs:
     what-if:
-        name: What-If Analysis - ${{ github.ref_name }} vs production
+        name: What-If Analysis
         runs-on: ubuntu-24.04
         if: github.event_name == 'pull_request' 
         environment: production
