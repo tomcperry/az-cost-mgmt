@@ -54,7 +54,7 @@ jobs:
               with:
                 azcliversion: latest
                 inlineScript: |
-                    az deployment sub create --what-if --location ${{ env.AZ_LOCATION }} --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} --template-file ./infrastructure/main.bicep --parameters ./infrastructure/parameters.bicepparam
+                    az deployment sub create --what-if --location ${{ env.AZ_LOCATION }} --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} --template-file ./infrastructure/main.bicep --parameters ./infrastructure/parameters.bicepparam --what-if-result-format FullResourcePayloads 
 
     deploy:
         name: Deployment - ${{ github.ref_name == 'main' && 'Production' || 'Staging' }}
