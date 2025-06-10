@@ -1,5 +1,5 @@
 name: Deploy to Environment
-run-name: Deploy to ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+run-name: ${{ github.ref_name == 'main' && 'Production deployment' || format('CI for {0}', github.ref_name) }}
 on:
     push:
         branches:
