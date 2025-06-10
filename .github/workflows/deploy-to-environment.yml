@@ -42,6 +42,7 @@ jobs:
                 else
                     echo "Bicep linting passed without warnings."
                 fi
+    
     what-if:
         name: What-If Analysis
         runs-on: ubuntu-24.04
