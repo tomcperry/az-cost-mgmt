@@ -62,7 +62,7 @@ jobs:
             - name: Update PR
               run: |
                 gh pr comment ${{ github.event.pull_request.number }} --body "$(cat <<EOF
-                **What-if analysis result**
+                ### What-if analysis result
                 From commit ${{ github.sha }}
                 \`\`\`text
                 ${WHAT_IF_RESULT}
