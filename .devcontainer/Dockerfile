@@ -18,6 +18,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
         neovim \
         bash-completion \
         just \
+        jq \
     && userdel ubuntu \
     && groupadd --gid $USER_GID $USERNAME \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME
