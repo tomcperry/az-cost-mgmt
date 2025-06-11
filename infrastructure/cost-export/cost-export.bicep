@@ -1,7 +1,7 @@
 targetScope = 'subscription'
 
 @export()
-type environmentType = 'prod' | 'staging' | 'dev' 
+type environmentType = 'production' | 'staging' | 'dev' 
 
 // Parameters
 @description('Deployment environment. Used to differentiate non-production export names and the managed identity that will be created.')
@@ -29,7 +29,7 @@ param containerName string
 param focusDatasetVersion string = '1.0r2'
 
 // Variables
-var costExportNamePrefix = environment == 'prod' ? 'cost-export' : '${environment}-cost-export'
+var costExportNamePrefix = environment == 'production' ? 'cost-export' : '${environment}-cost-export'
 
 // Existing resources
 resource storageAccountResourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' existing = {
