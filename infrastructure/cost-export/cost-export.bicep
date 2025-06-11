@@ -73,3 +73,43 @@ resource MtdCostExport 'Microsoft.CostManagement/exports@2025-03-01' = {
     }
   }
 }
+
+resource MonthlyCostExport 'Microsoft.CostManagement/exports@2025-03-01' = {
+  name: 'cost-export-monthly-${costExportNameSuffix}'
+  location: location
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties: {
+    compressionMode: 'snappy'
+    format: 'Parquet'
+    dataOverwriteBehavior: 'OverwritePreviousReport'
+    definition: {
+      type: 'FocusCost'
+      dataSet: {
+        granularity: 'Daily'
+        configuration: {
+          dataVersion: focusDatasetVersion
+        }
+      }
+      timeframe: 'TheLastMonth'
+    }
+    deliveryInfo: {
+      destination: {
+        type: 'AzureBlob'
+        resourceId: storageAccount.id
+        container: containerName
+        rootFolderPath: 'exports/monthly/${costExportNameSuffix}'
+      }
+    }
+    partitionData: true
+    schedule: {
+      recurrence: 'Monthly'
+      recurrencePeriod: {
+        from: '2024-01-01'
+        to: '2050-12-31'
+      }
+      status: 'Active'
+    }
+  }
+}
