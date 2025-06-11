@@ -22,6 +22,7 @@ concurrency:
 
 env:
     AZ_LOCATION: ${{ vars.AZ_LOCATION || 'westeurope' }}
+    AZ_ENVIRONMENT: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
 
 jobs:
     lint:
