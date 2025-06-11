@@ -1,7 +1,7 @@
 targetScope = 'subscription'
 
 @export()
-type environmentType = 'production' | 'staging' | 'dev' 
+type environmentType = 'production' | 'staging' | 'dev' | 'default'
 
 // Parameters
 @description('Deployment environment. Used to differentiate non-production export names and the managed identity that will be created.')

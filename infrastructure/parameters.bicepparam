@@ -1,6 +1,6 @@
 using 'main.bicep'
 
-param environment = readEnvironmentVariable('AZ_ENVIRONMENT', 'dev')
+param environment = readEnvironmentVariable('AZ_ENVIRONMENT', 'default')
 param location = readEnvironmentVariable('AZ_LOCATION', 'westeurope')
 param storageAccountSku = 'Standard_LRS'
 param costManagementScopes = [
