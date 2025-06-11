@@ -23,7 +23,7 @@ param containerName string
 param focusDatasetVersion string = '1.0r2'
 
 // Existing resources
-resource storageAccountResourceGroup  'Microsoft.Resources/resourceGroups@2025-04-01' existing = {
+resource storageAccountResourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' existing = {
   name: storageAccountResourceGroupName
   scope: subscription(storageAccountSubscriptionId)
 }
