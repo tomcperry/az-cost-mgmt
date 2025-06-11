@@ -1,6 +1,12 @@
 targetScope = 'subscription'
 
+@export()
+type environmentType = 'prod' | 'staging' | 'dev' 
+
 // Parameters
+@description('Deployment environment. Used to differentiate non-production export names and the managed identity that will be created.')
+param environment environmentType
+
 @description('The suffix for the cost export name. Also used in the export path. Examples could include environment such as prod, dev, etc.')
 param costExportNameSuffix string
 
@@ -22,6 +28,9 @@ param containerName string
 @description('The focus dataset version to use. Defaults to "1.0r2".')
 param focusDatasetVersion string = '1.0r2'
 
+// Variables
+var costExportNamePrefix = environment == 'prod' ? 'cost-export' : '${environment}-cost-export'
+
 // Existing resources
 resource storageAccountResourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' existing = {
   name: storageAccountResourceGroupName
@@ -35,7 +44,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2024-01-01' existing 
 
 // Resources
 resource MtdCostExport 'Microsoft.CostManagement/exports@2025-03-01' = {
-  name: 'cost-export-mtd-${costExportNameSuffix}'
+  name: '${costExportNamePrefix}-mtd-${costExportNameSuffix}'
   location: location
   identity: {
     type: 'SystemAssigned'
@@ -75,7 +84,7 @@ resource MtdCostExport 'Microsoft.CostManagement/exports@2025-03-01' = {
 }
 
 resource MonthlyCostExport 'Microsoft.CostManagement/exports@2025-03-01' = {
-  name: 'cost-export-monthly-${costExportNameSuffix}'
+  name: '${costExportNamePrefix}-monthly-${costExportNameSuffix}'
   location: location
   identity: {
     type: 'SystemAssigned'
