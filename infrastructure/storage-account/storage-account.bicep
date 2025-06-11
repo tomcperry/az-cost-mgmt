@@ -60,3 +60,5 @@ resource container 'Microsoft.Storage/storageAccounts/blobServices/containers@20
     defaultEncryptionScope: '$account-encryption-key'
   }
 }
+
+output containerName string = container.name
