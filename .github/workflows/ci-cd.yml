@@ -35,7 +35,7 @@ jobs:
             - name: Lint Bicep
               run: |
                 az bicep install
-                az bicep build --file ./infrastructure/main.bicep 2>&1 | tee bicep_build.log
+                az bicep build --file ./infrastructure/storage-account/main.bicep 2>&1 | tee bicep_build.log
                 if grep -q -i -E "warning|error" bicep_build.log; then
                     echo "Bicep linting found warnings."
                     exit 1
@@ -74,7 +74,7 @@ jobs:
               with:
                 azcliversion: latest
                 inlineScript: |
-                    whatif=$(az deployment sub create --what-if --location ${{ env.AZ_LOCATION }} --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} --template-file ./infrastructure/main.bicep --parameters ./infrastructure/parameters.bicepparam --what-if-result-format FullResourcePayloads)
+                    whatif=$(az deployment sub create --what-if --location ${{ env.AZ_LOCATION }} --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} --template-file ./infrastructure/storage-account/main.bicep --parameters ./infrastructure/storage-account/parameters.bicepparam --what-if-result-format FullResourcePayloads)
                     echo "${whatif}"
                     {
                         echo "WHAT_IF_RESULT<<EOF"
@@ -118,4 +118,4 @@ jobs:
                 azcliversion: latest
                 inlineScript: |
                     az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-                    az stack sub create --location ${{ env.AZ_LOCATION }} --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} --template-file ./infrastructure/main.bicep --parameters ./infrastructure/parameters.bicepparam --name "cost-mgmt" --action-on-unmanage deleteAll --deny-settings-mode none --yes
+                    az stack sub create --location ${{ env.AZ_LOCATION }} --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} --template-file ./infrastructure/storage-account/main.bicep --parameters ./infrastructure/storage-account/parameters.bicepparam --name "cost-mgmt" --action-on-unmanage deleteAll --deny-settings-mode none --yes
