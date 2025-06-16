@@ -3,11 +3,6 @@ targetScope = 'subscription'
 // Types
 type storageAccountSkuType = 'Standard_GRS' | 'Standard_GZRS' | 'Standard_LRS' | 'Standard_ZRS'
 
-type costManagementScopeType = {
-  subscriptionId: string
-  costExportSuffix: string
-}
-
 // Parameters
 param location string
 param storageAccountSku storageAccountSkuType
