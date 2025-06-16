@@ -76,10 +76,22 @@ jobs:
                 tenant-id: ${{ secrets.AZURE_TENANT_ID }}
                 subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
             
-            - name: Deploy
+            - name: Deploy Storage Account
               uses: azure/cli@v2
               with:
                 azcliversion: latest
                 inlineScript: |
                     az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-                    az stack sub create --location ${{ env.AZ_LOCATION }} --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} --template-file ${{ env.STORAGE_ACCOUNT_TEMPLATE_PATH }} --parameters ${{ env.STORAGE_ACCOUNT_PARAMETERS_PATH }} --name "cost-mgmt" --action-on-unmanage deleteAll --deny-settings-mode none --yes
+                    stack_result=$(az stack sub create --location ${{ env.AZ_LOCATION }} --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} --template-file ${{ env.STORAGE_ACCOUNT_TEMPLATE_PATH }} --parameters ${{ env.STORAGE_ACCOUNT_PARAMETERS_PATH }} --name "cost-mgmt" --action-on-unmanage deleteAll --deny-settings-mode none --yes --output json)
+                    if [ $? -ne 0 ]; then
+                        echo "Failed to deploy storage account stack."
+                        exit 1
+                    else
+                        echo "Storage account stack deployed successfully."
+                        echo "${stack_result}"
+                    fi
+                    echo "AZ_STORAGE_ACCOUNT_NAME=$(echo ${stack_result} | jq -r '.outputs.storageAccountName.value')" >> $GITHUB_ENV
+
+            - name: Verify ENV
+              run: |
+                echo "Storage Account Name: $AZ_STORAGE_ACCOUNT_NAME"
