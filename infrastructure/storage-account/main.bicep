@@ -22,3 +22,9 @@ module storageAccount 'templates/storage-account.bicep' = {
     storageAccountSku: storageAccountSku
   }
 }
+
+// Outputs
+output storageAccountName string = storageAccount.outputs.storageAccountName
+output storageAccountResourceGroupName string = rg.name
+output storageAccountSubscriptionId string = subscription().subscriptionId
+output containerName string = storageAccount.outputs.containerName
