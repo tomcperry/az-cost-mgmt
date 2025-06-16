@@ -57,56 +57,6 @@ jobs:
                     echo -e "\tCost export template linting passed without warnings."
                 fi
 
-    what-if:
-        name: What-If (vs production)
-        runs-on: ubuntu-24.04
-        if: github.event_name == 'pull_request' 
-        needs: lint
-        environment: production
-        env:
-            GH_TOKEN: ${{ github.token }}
-        permissions:
-            id-token: write
-            contents: read
-            pull-requests: write
-        steps:
-            - name: Capture timestamp
-              run: echo "WORKFLOW_TS=$(TZ='Europe/Copenhagen' date)" >> $GITHUB_ENV
-
-            - name: Checkout
-              uses: actions/checkout@v4
-
-            - name: Azure Login
-              uses: azure/login@v2
-              with:
-                client-id: ${{ secrets.AZURE_CLIENT_ID }}
-                tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-                subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-            
-            - name: What-if
-              uses: azure/cli@v2
-              with:
-                azcliversion: latest
-                inlineScript: |
-                    whatif=$(az deployment sub create --what-if --location ${{ env.AZ_LOCATION }} --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} --template-file ${{ env.STORAGE_ACCOUNT_TEMPLATE_PATH }} --parameters ${{ env.STORAGE_ACCOUNT_PARAMETERS_PATH }} --what-if-result-format FullResourcePayloads)
-                    echo "${whatif}"
-                    {
-                        echo "WHAT_IF_RESULT<<EOF"
-                        echo "${whatif}"
-                        echo "EOF"
-                    } >> $GITHUB_ENV
-            
-            - name: Update PR
-              run: |
-                gh pr comment ${{ github.event.pull_request.number }} --body "$(cat <<EOF
-                ### What-if analysis result
-                \`\`\`text
-                ${WHAT_IF_RESULT}
-                \`\`\`
-                From commit: ${{ github.event.pull_request.head.sha }}
-                Started at: \`${WORKFLOW_TS}\`
-                EOF
-                )"
     deploy:
         name: Deployment - ${{ github.ref_name == 'main' && 'Production' || 'Staging' }}
         runs-on: ubuntu-24.04
