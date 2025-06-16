@@ -39,12 +39,22 @@ jobs:
             - name: Lint Bicep
               run: |
                 az bicep install
+                echo "Checking storage account template"
                 az bicep build --file ${{ env.STORAGE_ACCOUNT_TEMPLATE_PATH }} 2>&1 | tee bicep_build.log
                 if grep -q -i -E "warning|error" bicep_build.log; then
-                    echo "Bicep linting found warnings."
+                    echo -e "\tBicep linting found warnings."
                     exit 1
                 else
-                    echo "Bicep linting passed without warnings."
+                    echo -e "\tStorage account template linting passed without warnings."
+                fi
+                echo ""
+                echo "Checking cost exports template"
+                az bicep build --file ${{ env.COST_EXPORTS_TEMPLATE_PATH }} 2>&1 | tee bicep_build.log
+                if grep -q -i -E "warning|error" bicep_build.log; then
+                    echo -e "\tBicep linting found warnings."
+                    exit 1
+                else
+                    echo -e "\tCost exports template linting passed without warnings."
                 fi
 
     what-if:
