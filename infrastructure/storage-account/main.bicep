@@ -19,7 +19,7 @@ resource rg 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   location: location
 }
 
-module storageAccount 'storage-account/storage-account.bicep' = {
+module storageAccount 'templates/storage-account.bicep' = {
   name: 'cost-mgmt-storageAccount-${deploymentId}'
   scope: rg
   params: {
