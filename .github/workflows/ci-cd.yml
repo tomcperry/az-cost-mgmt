@@ -23,8 +23,8 @@ concurrency:
 env:
     STORAGE_ACCOUNT_TEMPLATE_PATH: './infrastructure/storage-account/main.bicep'
     STORAGE_ACCOUNT_PARAMETERS_PATH: './infrastructure/storage-account/parameters.bicepparam'
-    COST_EXPORTS_TEMPLATE_PATH: './infrastructure/cost-exports/main.bicep'
-    COST_EXPORTS_PARAMETERS_PATH: './infrastructure/cost-exports/parameters.bicepparam'
+    COST_EXPORT_TEMPLATE_PATH: './infrastructure/cost-export/main.bicep'
+    COST_EXPORT_PARAMETERS_PATH: './infrastructure/cost-export/parameters.bicepparam'
     AZ_LOCATION: ${{ vars.AZ_LOCATION || 'westeurope' }}
     AZ_ENVIRONMENT: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
 
@@ -48,13 +48,13 @@ jobs:
                     echo -e "\tStorage account template linting passed without warnings."
                 fi
                 echo ""
-                echo "Checking cost exports template"
-                az bicep build --file ${{ env.COST_EXPORTS_TEMPLATE_PATH }} 2>&1 | tee bicep_build.log
+                echo "Checking cost export template"
+                az bicep build --file ${{ env.COST_EXPORT_TEMPLATE_PATH }} 2>&1 | tee bicep_build.log
                 if grep -q -i -E "warning|error" bicep_build.log; then
                     echo -e "\tBicep linting found warnings."
                     exit 1
                 else
-                    echo -e "\tCost exports template linting passed without warnings."
+                    echo -e "\tCost export template linting passed without warnings."
                 fi
 
     what-if:
