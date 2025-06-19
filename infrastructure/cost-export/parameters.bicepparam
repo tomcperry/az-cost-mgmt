@@ -1,5 +1,6 @@
 using 'main.bicep'
 
+param deploymentId = readEnvironmentVariable('DEPLOYMENT_ID', '')
 param location = readEnvironmentVariable('AZ_LOCATION', 'westeurope')
 param environment = readEnvironmentVariable('AZ_ENVIRONMENT', 'default')
 param storageAccountName = readEnvironmentVariable('AZ_STORAGE_ACCOUNT_NAME', '')

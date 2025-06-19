@@ -6,7 +6,10 @@ type storageAccountSkuType = 'Standard_GRS' | 'Standard_GZRS' | 'Standard_LRS' |
 // Parameters
 param location string
 param storageAccountSku storageAccountSkuType
-param deploymentId string = take(uniqueString(sys.utcNow()), 6)
+param deploymentId string
+
+// Variables
+var deploymentIdValidated = length(deploymentId) > 0 ? deploymentId : take(uniqueString(sys.utcNow()), 6)
 
 // Resources
 resource rg 'Microsoft.Resources/resourceGroups@2025-04-01' = {
@@ -15,7 +18,7 @@ resource rg 'Microsoft.Resources/resourceGroups@2025-04-01' = {
 }
 
 module storageAccount 'templates/storage-account.bicep' = {
-  name: 'cost-mgmt-storageAccount-${deploymentId}'
+  name: 'cost-mgmt-storageAccount-${deploymentIdValidated}'
   scope: rg
   params: {
     location: location

@@ -31,11 +31,15 @@ param storageAccountResourceGroupName string
 param containerName string
 
 @description('A unique identifier for the deployment.')
-param deploymentId string = take(uniqueString(sys.utcNow()), 6)
+param deploymentId string
+
+// Variables
+var deploymentIdValidated = length(deploymentId) > 0 ? deploymentId : take(uniqueString(sys.utcNow()), 6)
+
 
 // Resources
 module costExports 'templates/cost-export.bicep' = [for scope in costManagementScopes: if (length(scope.subscriptionId) > 0) {
-  name: 'cost-export-${scope.costExportSuffix}-${deploymentId}'
+  name: 'cost-export-${scope.costExportSuffix}-${deploymentIdValidated}'
   scope: subscription(scope.subscriptionId)
   params: {
     location: location
