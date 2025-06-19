@@ -91,7 +91,13 @@ jobs:
                         echo "${stack_result}"
                     fi
                     echo "AZ_STORAGE_ACCOUNT_NAME=$(echo ${stack_result} | jq -r '.outputs.storageAccountName.value')" >> $GITHUB_ENV
+                    echo "AZ_STORAGE_ACCOUNT_RESOURCE_GROUP_NAME=$(echo ${stack_result} | jq -r '.outputs.storageAccountResourceGroupName.value')" >> $GITHUB_ENV
+                    echo "AZ_STORAGE_ACCOUNT_SUBSCRIPTION_ID=$(echo ${stack_result} | jq -r '.outputs.storageAccountSubscriptionId.value')" >> $GITHUB_ENV
 
-            - name: Verify ENV
-              run: |
-                echo "Storage Account Name: $AZ_STORAGE_ACCOUNT_NAME"
+            - name: Deploy Cost Exports
+              uses: azure/cli@v2
+              with:
+                azcliversion: latest
+                inlineScript: |                     
+                    az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+                    az deployment sub create --location ${{ env.AZ_LOCATION }} --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} --template-file ${{ env.COST_EXPORT_TEMPLATE_PATH }} --parameters ${{ env.COST_EXPORT_PARAMETERS_PATH }} --name "cost-exports"
