@@ -21,7 +21,12 @@ concurrency:
     cancel-in-progress: true
 
 env:
+    STORAGE_ACCOUNT_TEMPLATE_PATH: './infrastructure/storage-account/main.bicep'
+    STORAGE_ACCOUNT_PARAMETERS_PATH: './infrastructure/storage-account/parameters.bicepparam'
+    COST_EXPORT_TEMPLATE_PATH: './infrastructure/cost-export/main.bicep'
+    COST_EXPORT_PARAMETERS_PATH: './infrastructure/cost-export/parameters.bicepparam'
     AZ_LOCATION: ${{ vars.AZ_LOCATION || 'westeurope' }}
+    AZ_ENVIRONMENT: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
 
 jobs:
     lint:
@@ -34,64 +39,24 @@ jobs:
             - name: Lint Bicep
               run: |
                 az bicep install
-                az bicep build --file ./infrastructure/main.bicep 2>&1 | tee bicep_build.log
+                echo "Checking storage account template"
+                az bicep build --file ${{ env.STORAGE_ACCOUNT_TEMPLATE_PATH }} 2>&1 | tee bicep_build.log
                 if grep -q -i -E "warning|error" bicep_build.log; then
-                    echo "Bicep linting found warnings."
+                    echo -e "\tBicep linting found warnings."
                     exit 1
                 else
-                    echo "Bicep linting passed without warnings."
+                    echo -e "\tStorage account template linting passed without warnings."
+                fi
+                echo ""
+                echo "Checking cost export template"
+                az bicep build --file ${{ env.COST_EXPORT_TEMPLATE_PATH }} 2>&1 | tee bicep_build.log
+                if grep -q -i -E "warning|error" bicep_build.log; then
+                    echo -e "\tBicep linting found warnings."
+                    exit 1
+                else
+                    echo -e "\tCost export template linting passed without warnings."
                 fi
 
-    what-if:
-        name: What-If (vs production)
-        runs-on: ubuntu-24.04
-        if: github.event_name == 'pull_request' 
-        needs: lint
-        environment: production
-        env:
-            GH_TOKEN: ${{ github.token }}
-        permissions:
-            id-token: write
-            contents: read
-            pull-requests: write
-        steps:
-            - name: Capture timestamp
-              run: echo "WORKFLOW_TS=$(TZ='Europe/Copenhagen' date)" >> $GITHUB_ENV
-
-            - name: Checkout
-              uses: actions/checkout@v4
-
-            - name: Azure Login
-              uses: azure/login@v2
-              with:
-                client-id: ${{ secrets.AZURE_CLIENT_ID }}
-                tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-                subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-            
-            - name: What-if
-              uses: azure/cli@v2
-              with:
-                azcliversion: latest
-                inlineScript: |
-                    whatif=$(az deployment sub create --what-if --location ${{ env.AZ_LOCATION }} --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} --template-file ./infrastructure/main.bicep --parameters ./infrastructure/parameters.bicepparam --what-if-result-format FullResourcePayloads)
-                    echo "${whatif}"
-                    {
-                        echo "WHAT_IF_RESULT<<EOF"
-                        echo "${whatif}"
-                        echo "EOF"
-                    } >> $GITHUB_ENV
-            
-            - name: Update PR
-              run: |
-                gh pr comment ${{ github.event.pull_request.number }} --body "$(cat <<EOF
-                ### What-if analysis result
-                \`\`\`text
-                ${WHAT_IF_RESULT}
-                \`\`\`
-                From commit: ${{ github.event.pull_request.head.sha }}
-                Started at: \`${WORKFLOW_TS}\`
-                EOF
-                )"
     deploy:
         name: Deployment - ${{ github.ref_name == 'main' && 'Production' || 'Staging' }}
         runs-on: ubuntu-24.04
@@ -110,11 +75,41 @@ jobs:
                 client-id: ${{ secrets.AZURE_CLIENT_ID }}
                 tenant-id: ${{ secrets.AZURE_TENANT_ID }}
                 subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-            
-            - name: Deploy
+
+            - name: Generate Deployment ID
+              run: |
+                  char_set="abcdefghijklmnopqrstuvwxyz1234567890"
+                  char_set_length=${#char_set}
+                  deployment_id=""
+                  for (( i=0; i<6; i++ )); do
+                      rnd_index=$((RANDOM % char_set_length))
+                      deployment_id+="${char_set:rnd_index:1}"
+                  done
+                  echo "DEPLOYMENT_ID=${deployment_id}" >> $GITHUB_ENV
+                  echo "Deployment ID: ${deployment_id}"
+
+            - name: Deploy Storage Account
               uses: azure/cli@v2
               with:
                 azcliversion: latest
                 inlineScript: |
                     az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-                    az stack sub create --location ${{ env.AZ_LOCATION }} --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} --template-file ./infrastructure/main.bicep --parameters ./infrastructure/parameters.bicepparam --name "cost-mgmt" --action-on-unmanage deleteAll --deny-settings-mode none --yes
+                    stack_result=$(az stack sub create --location ${{ env.AZ_LOCATION }} --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} --template-file ${{ env.STORAGE_ACCOUNT_TEMPLATE_PATH }} --parameters ${{ env.STORAGE_ACCOUNT_PARAMETERS_PATH }} --name "cost-mgmt-$DEPLOYMENT_ID" --action-on-unmanage deleteAll --deny-settings-mode none --yes --output json)
+                    if [ $? -ne 0 ]; then
+                        echo "Failed to deploy storage account stack."
+                        exit 1
+                    else
+                        echo "Storage account stack deployed successfully."
+                        echo "${stack_result}"
+                    fi
+                    echo "AZ_STORAGE_ACCOUNT_NAME=$(echo ${stack_result} | jq -r '.outputs.storageAccountName.value')" >> $GITHUB_ENV
+                    echo "AZ_STORAGE_ACCOUNT_RESOURCE_GROUP_NAME=$(echo ${stack_result} | jq -r '.outputs.storageAccountResourceGroupName.value')" >> $GITHUB_ENV
+                    echo "AZ_STORAGE_ACCOUNT_SUBSCRIPTION_ID=$(echo ${stack_result} | jq -r '.outputs.storageAccountSubscriptionId.value')" >> $GITHUB_ENV
+
+            - name: Deploy Cost Exports
+              uses: azure/cli@v2
+              with:
+                azcliversion: latest
+                inlineScript: |                     
+                    az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+                    az deployment sub create --location ${{ env.AZ_LOCATION }} --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} --template-file ${{ env.COST_EXPORT_TEMPLATE_PATH }} --parameters ${{ env.COST_EXPORT_PARAMETERS_PATH }} --name "cost-exports-$DEPLOYMENT_ID"
