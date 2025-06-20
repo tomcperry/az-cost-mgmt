@@ -7,9 +7,11 @@ type storageAccountSkuType = 'Standard_GRS' | 'Standard_GZRS' | 'Standard_LRS' |
 param location string
 param storageAccountSku storageAccountSkuType
 param deploymentId string
+param commaSeperatedstorageAdminPrincipalIDs string
 
 // Variables
 var deploymentIdValidated = length(deploymentId) > 0 ? deploymentId : take(uniqueString(sys.utcNow()), 6)
+var storageAdminPrincipalIDs = split(commaSeperatedstorageAdminPrincipalIDs, ',')
 
 // Resources
 resource rg 'Microsoft.Resources/resourceGroups@2025-04-01' = {
@@ -23,6 +25,7 @@ module storageAccount 'templates/storage-account.bicep' = {
   params: {
     location: location
     storageAccountSku: storageAccountSku
+    storageAdminPrincipalIDs: storageAdminPrincipalIDs
   }
 }
 
