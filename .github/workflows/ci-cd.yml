@@ -94,7 +94,7 @@ jobs:
                 azcliversion: latest
                 inlineScript: |
                     az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-                    stack_result=$(az stack sub create --location ${{ env.AZ_LOCATION }} --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} --template-file ${{ env.STORAGE_ACCOUNT_TEMPLATE_PATH }} --parameters ${{ env.STORAGE_ACCOUNT_PARAMETERS_PATH }} --name "cost-mgmt-$DEPLOYMENT_ID" --action-on-unmanage deleteAll --deny-settings-mode none --yes --output json)
+                    stack_result=$(az stack sub create --location ${{ env.AZ_LOCATION }} --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }} --template-file ${{ env.STORAGE_ACCOUNT_TEMPLATE_PATH }} --parameters ${{ env.STORAGE_ACCOUNT_PARAMETERS_PATH }} --name "cost-mgmt" --action-on-unmanage deleteAll --deny-settings-mode none --yes --output json)
                     if [ $? -ne 0 ]; then
                         echo "Failed to deploy storage account stack."
                         exit 1
