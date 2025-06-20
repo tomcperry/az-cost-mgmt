@@ -27,6 +27,7 @@ env:
     COST_EXPORT_PARAMETERS_PATH: './infrastructure/cost-export/parameters.bicepparam'
     AZ_LOCATION: ${{ vars.AZ_LOCATION || 'westeurope' }}
     AZ_ENVIRONMENT: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+    STORAGE_ADMIN_PRINCIPAL_IDS: ${{ secrets.STORAGE_ADMIN_PRINCIPAL_IDS || '' }}
 
 jobs:
     lint:
